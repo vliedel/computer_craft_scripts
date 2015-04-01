@@ -3,6 +3,7 @@
 minFuel=50
 fuelSlot=16
 sapplingSlot=1
+maxSignalStrength=15
 woodSlot=5
 treeCount=13
 
@@ -117,12 +118,12 @@ function moveTo(newX, newY, newZ, newDir)
 	turn(newDir)
 end
 
-function turnLeft()
-	turn((curDir-1)%4)
+function turnLeft(num)
+	turn((curDir-num)%4)
 end
 
-function turnRight()
-	turn((curDir+1)%4)
+function turnRight(num)
+	turn((curDir+num)%4)
 end
 
 function moveUp(blocks)
@@ -147,6 +148,22 @@ function moveForward(blocks)
 	end
 end
 
+-- TODO: should not turn around
+function moveBackward(blocks)
+	if (blocks < 1) then
+		return
+	end
+	if (curDir == direction.FORWARD) then
+		moveToZ(curZ-blocks)
+	elseif (curDir == direction.BACK) then
+		moveToZ(curZ+blocks)
+	elseif (curDir == direction.RIGHT) then
+		moveToX(curX-blocks)
+	else
+		moveToX(curX+blocks)
+	end
+end
+
 function checkFuel()
 	while (turtle.getFuelLevel() < minFuel) do
 		if (turtle.getItemCount(fuelSlot) < 1) then
@@ -158,44 +175,44 @@ function checkFuel()
 	return true
 end
 
--- Turtle is facing a tree, cut it and replant
+-- Turtle is facing a tree, cut it and replant, move back to where it started
 function handleTree()
 	moveForward(1) -- will cut
-	while turtle.detectUp() do
-		turtle.digUp()
-		turtle.up()
+	while (turtle.detectUp()) do
+		moveUp() -- will cut
 	end
-	while not turtle.detectDown() do
-		turtle.down()
+	while (not turtle.detectDown()) do
+		moveDown()
 	end
+	-- Turtle is 1 block above root of tree
 	turtle.digDown()
 	turtle.select(sapplingSlot)
 	turtle.placeDown()
-	backward()
+	turnLeft(2)
+	moveForward(1)
 end
  
-function collect()
-	forward()
-	forward()
-	for i=1,treeCount do
-		forward()
-		turtle.turnRight()
---		if turtle.detect() and turtle.compareTo(15) then
-		if turtle.detect() then
-			cutTree()
+function findTree()
+	moveForward(2)
+	signalStrengthCrossing = redstone.getAnalogInput("down")
+	turnRight(1)
+	moveForward(1)
+	signalStrength = redstone.getAnalogInput("down")
+	if (signalStrength > signalStrengthCrossing) then
+		-- Correct route
+		for i=1,treeCount do
+			signalStrength = redstone.getAnalogInput("down")
+			if (signalStrength == maxSignalStrength) then
+				turnLeft(1)
+				handleTree()
+				break;
+			end
+			moveForward(1)
 		end
-		turtle.turnLeft()
+		
+	else
+		-- Take the other route
 	end
-	for i=1,treeCount+2 do
-		backward()
-	end
-	turtle.turnLeft()
-	for slot=1,4 do
-		turtle.select(slot)
-		turtle.drop()
-	end
-	turtle.select(1)
-	turtle.turnRight()
 end
 
 
