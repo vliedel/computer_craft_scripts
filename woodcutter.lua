@@ -204,8 +204,8 @@ function findTree()
 			signalStrength = redstone.getAnalogInput("down")
 			if (signalStrength == maxSignalStrength) then
 				turnLeft(1)
-				handleTree()
-				break;
+				return true
+				break
 			end
 			moveForward(1)
 		end
@@ -213,6 +213,10 @@ function findTree()
 	else
 		-- Take the other route
 	end
+	return false
+end
+
+function goHome()
 end
 
 
@@ -228,14 +232,11 @@ curDir = direction.FORWARD
 if (not checkFuel()) then
 	return
 end
-moveTo(3, 0, 0, direction.FORWARD)
-sleep(3)
-moveTo(3, 0, 3, direction.FORWARD)
-sleep(3)
-moveTo(2, 0, 3, direction.FORWARD)
-sleep(3)
-moveTo(0, 0, 0, direction.FORWARD)
-sleep(3)
+
+if (findTree()) then
+	print("Found a tree!")
+end
+
 
 --while true do
 --	if (redstone.getAnalogInput("bottom") > 0) then
