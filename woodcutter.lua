@@ -2,6 +2,8 @@
 
 minFuel=50
 fuelSlot=16
+sapplingSlot=1
+woodSlot=5
 treeCount=13
 
 -- Variables to store the current location and orientation of the turtle. x is right, left, y is up, down and
@@ -60,7 +62,6 @@ end
 
 
 function moveToZ(newZ)
-	print("-- Woodcutter script started --")
 	if (newZ == curZ) then
 		return
 	end
@@ -87,12 +88,63 @@ function moveToZ(newZ)
 	end
 end
 
+function moveToY(newY)
+	if (newY == curY) then
+		return
+	end
+	
+	while (newY > curY) do
+		if (turtle.up()) then
+			curY = curY+1
+		else
+			turtle.digUp()
+		end
+	end
+	
+	while (newY < curY) do
+		if (turtle.down()) then
+			curY = curY-1
+		else
+			turtle.digDown()
+		end
+	end
+end
 
 function moveTo(newX, newY, newZ, newDir)
 	print("move to: x=", newX, " y=", newY, " z=", newZ, " dir=", newDir)
 	moveToZ(newZ)
 	moveToX(newX)
 	turn(newDir)
+end
+
+function turnLeft()
+	turn((curDir-1)%4)
+end
+
+function turnRight()
+	turn((curDir+1)%4)
+end
+
+function moveUp(blocks)
+	if (blocks < 1) then
+		return
+	end
+	moveToY(curY+blocks)
+end
+
+function moveForward(blocks)
+	if (blocks < 1) then
+		return
+	end
+	if (curDir == direction.FORWARD) then
+		moveToZ(curZ+blocks)
+	elseif (curDir == direction.BACK) then
+		moveToZ(curZ-blocks)
+	elseif (curDir == direction.RIGHT) then
+		moveToX(curX+blocks)
+	else
+		moveToX(curX-blocks)
+	end
 end
 
 function checkFuel()
@@ -106,8 +158,9 @@ function checkFuel()
 	return true
 end
 
-function cutTree()
-	forward()
+-- Turtle is facing a tree, cut it and replant
+function handleTree()
+	moveForward(1) -- will cut
 	while turtle.detectUp() do
 		turtle.digUp()
 		turtle.up()
@@ -116,9 +169,8 @@ function cutTree()
 		turtle.down()
 	end
 	turtle.digDown()
-	turtle.select(16)
+	turtle.select(sapplingSlot)
 	turtle.placeDown()
-	turtle.select(1)
 	backward()
 end
  
