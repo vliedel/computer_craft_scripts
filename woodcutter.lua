@@ -200,23 +200,30 @@ function checkFuel()
 	return true
 end
 
--- Turtle is facing a tree, cut it and replant, move back to where it started
+-- Turtle is facing a tree, cut it and replant, move back to where it started, facing away from tree
 function handleTree()
+	turtle.select(woodSlot)
 	moveForward(1) -- will cut
+	
+	-- TODO: use: turtle.compareUp() 	Detects if the block above is the same as the one in the currently selected slot
+	-- or use: turtle.inspectUp() 	Returns the ID string and metadata of the block above the Turtle
 	while (turtle.detectUp()) do
 		moveUp() -- will cut
 	end
-	while (not turtle.detectDown()) do
-		moveDown()
-	end
+--	while (not turtle.detectDown()) do
+--		moveDown()
+--	end
+	moveToY(0)
 	-- Turtle is 1 block above root of tree
 	turtle.digDown()
-	turtle.select(sapplingSlot)
-	turtle.placeDown()
+	-- Plant new tree, but always leave 1 sapling in the slot
+	turtle.select(saplingSlot)
+	if (turtle.getItemCount() > 1) then
+		turtle.placeDown()
+	end
 	turnLeft(2)
 	moveForward(1)
 end
- 
 function findTree()
 	moveForward(2)
 	signalStrengthCrossing = redstone.getAnalogInput("down")
