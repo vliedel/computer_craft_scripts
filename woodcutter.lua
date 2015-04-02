@@ -2,12 +2,19 @@
 
 -- Fuel settings
 minFuel=50
-fuelSlot=16
-sapplingSlot=1
 minFuelAfterRefuel=15000 -- TODO: make percentage? or maybe make a max()-set_value
+
+-- Slots
+fuelSlot=1
+saplingSlot=2
+woodSlot=3
+
+-- ID settings
+--saplingID=
+--woodID=
+
+-- Redstone signal settings
 maxSignalStrength=15
-woodSlot=5
-treeCount=13
 
 -- Variables to store the current location and orientation of the turtle. x is right, left, y is up, down and
 -- z is forward, back with relation to the starting orientation. y, x and z are
