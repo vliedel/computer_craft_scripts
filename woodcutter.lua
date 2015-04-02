@@ -16,9 +16,19 @@ woodSlot=3
 -- Redstone signal settings
 maxSignalStrength=15
 
--- Variables to store the current location and orientation of the turtle. x is right, left, y is up, down and
--- z is forward, back with relation to the starting orientation. y, x and z are
--- in relation to the starting point (i.e. the starting point is (0, 0, 0))
+-- Woodcutter settings
+treeCount=4
+
+-- turtle.dig() Attempts to dig the block in front of the turtle. If successful, suck() is automatically called, placing the item in turtle inventory in the selected slot if possible (block type matches and the slot is not a full stack yet), or in the next available slot.
+-- returns true if block was broken
+-- TODO: how to detect if block was sucked up? Or better: how to detect when to go home?
+
+
+-- Variables to store the current location and orientation of the turtle.
+-- x is right (positive) and left (negative)
+-- y is up (positive) and down (negative)
+-- z is forward (positive) and back (negative)
+-- Starting location and orientation is (0, 0, 0, direction.FORWARD)
 local curX
 local curY
 local curZ
