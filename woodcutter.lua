@@ -1,8 +1,10 @@
 --import 'math'
 
+-- Fuel settings
 minFuel=50
 fuelSlot=16
 sapplingSlot=1
+minFuelAfterRefuel=15000 -- TODO: make percentage? or maybe make a max()-set_value
 maxSignalStrength=15
 woodSlot=5
 treeCount=13
@@ -165,11 +167,17 @@ function moveBackward(blocks)
 end
 
 function checkFuel()
-	while (turtle.getFuelLevel() < minFuel) do
-		if (turtle.getItemCount(fuelSlot) < 1) then
-			return false
+--	while (turtle.getFuelLevel() < minFuel) do
+	turtle.select(fuelSlot) 
+	while (turtle.getFuelLevel() < minFuelAfterRefuel) do
+		-- Always leave 1 fuel item in the slot
+		if (turtle.getItemCount(fuelSlot) < 2) then
+			if (turtle.getFuelLevel() > minFuel) then
+				return true
+			else
+				return false
+			end
 		end
-		turtle.select(fuelSlot) 
 		turtle.refuel(fuelSlot)
 	end
 	return true
