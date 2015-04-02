@@ -224,7 +224,9 @@ function handleTree()
 	turnLeft(2)
 	moveForward(1)
 end
-function findTree()
+
+-- Follows the redstone dust, finding the place where the signal strength is maxSignalStrength
+function findSignalSource()
 	moveForward(2)
 	signalStrengthCrossing = redstone.getAnalogInput("down")
 	turnRight(1)
@@ -235,7 +237,6 @@ function findTree()
 		for i=1,treeCount do
 			signalStrength = redstone.getAnalogInput("down")
 			if (signalStrength == maxSignalStrength) then
-				turnLeft(1)
 				return true
 				break
 			end
@@ -248,7 +249,10 @@ function findTree()
 	return false
 end
 
-function goHome()
+function goToChest()
+	-- First move to correct X, so that turtle doesn't go through the wall
+	moveToX(0)
+	moveTo(0, 0, 0, direction.BACK)
 end
 
 
@@ -267,6 +271,9 @@ end
 
 if (findTree()) then
 	print("Found a tree!")
+	--turnLeft(1)
+	--cutTree()
+	--goToChest()
 end
 
 
