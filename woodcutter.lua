@@ -226,7 +226,8 @@ function handleTree()
 end
 
 -- Follows the redstone dust, finding the place where the signal strength is maxSignalStrength
-function findSignalSource()
+function findTree()
+	moveTo(0, 0, 0, direction.FORWARD)
 	moveForward(2)
 	signalStrengthCrossing = redstone.getAnalogInput("down")
 	turnRight(1)
