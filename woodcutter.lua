@@ -10,6 +10,7 @@ saplingSlot=2
 woodSlot=3
 
 -- ID settings
+--fuelID=
 --saplingID=
 --woodID=
 
@@ -200,6 +201,16 @@ function checkFuel()
 	return true
 end
 
+function getFuel()
+
+end
+
+
+
+-----------------------------------
+-- Woodcutter specific functions --
+-----------------------------------
+
 -- Turtle is facing a tree, cut it and replant, move back to where it started, facing away from tree
 function handleTree()
 	turtle.select(woodSlot)
@@ -250,11 +261,21 @@ function findTree()
 	return false
 end
 
+-- Makes the turtle go to the chest, where it can get fuel, get saplings and dump wood
 function goToChest()
 	-- First move to correct X, so that turtle doesn't go through the wall
 	moveToX(0)
 	moveTo(0, 0, 0, direction.BACK)
 end
+
+function getSaplings()
+
+end
+
+function dumpWood()
+
+end
+
 
 
 print("-- Woodcutter script started --")
