@@ -265,23 +265,19 @@ curY = 0
 curZ = 0
 curDir = direction.FORWARD
 
--- Run some test --
-if (not checkFuel()) then
-	return
+while (true) do
+	if (checkFuel()) then
+		if (redstone.getAnalogInput("bottom") > 0) then
+			print("A tree has grown!")
+			if (findTree()) then
+				print("Found a tree!")
+				--turnLeft(1)
+				--cutTree()
+			else
+				print("No tree found")
+			end
+			goToChest()
+		end
+	end
+	sleep(60)
 end
-
-if (findTree()) then
-	print("Found a tree!")
-	--turnLeft(1)
-	--cutTree()
-	--goToChest()
-end
-
-
---while true do
---	if (redstone.getAnalogInput("bottom") > 0) then
---		print("Tree has grown!")
---		collect()
---	end
---	sleep(60)
---end
