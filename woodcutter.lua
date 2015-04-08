@@ -2,7 +2,7 @@
 
 -- Fuel settings
 minFuel=50
-minFuelAfterRefuel=15000 -- TODO: make percentage? or maybe make a max()-set_value
+minFuelAfterRefuel=3200 -- TODO: make percentage? or maybe make a max()-set_value
 
 -- Slots
 fuelSlot=1
