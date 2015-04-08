@@ -212,20 +212,23 @@ end
 -- Woodcutter specific functions --
 -----------------------------------
 
--- Turtle is facing a tree, cut it and replant, move back to where it started, facing away from tree
+-- Turtle is facing a tree, but with redstone dust in between.
+-- Cut it and replant, move back to where it started, facing away from tree
 function handleTree()
+	moveUp(1)
+	moveForward(1)
 	turtle.select(woodSlot)
 	moveForward(1) -- will cut
 	
 	-- TODO: use: turtle.compareUp() 	Detects if the block above is the same as the one in the currently selected slot
 	-- or use: turtle.inspectUp() 	Returns the ID string and metadata of the block above the Turtle
 	while (turtle.detectUp()) do
-		moveUp() -- will cut
+		moveUp(1) -- will cut
 	end
 --	while (not turtle.detectDown()) do
 --		moveDown()
 --	end
-	moveToY(0)
+	moveToY(1)
 	-- Turtle is 1 block above root of tree
 	turtle.digDown()
 	-- Plant new tree, but always leave 1 sapling in the slot
@@ -234,26 +237,28 @@ function handleTree()
 		turtle.placeDown()
 	end
 	turnLeft(2)
-	moveForward(1)
+	moveForward(2)
+	moveDown(1)
 end
 
--- Follows the redstone dust, finding the place where the signal strength is maxSignalStrength
+-- Follows the redstone dust (on the sid), finding the place where the signal strength is maxSignalStrength
+-- Turn towards the signal
 function findTree()
-	moveTo(0, 0, 0, direction.FORWARD)
-	moveForward(2)
-	signalStrengthCrossing = redstone.getAnalogInput("down")
-	turnRight(1)
+	goToChest()
+	moveTo(0, 0, 0, direction.BACK)
 	moveForward(1)
-	signalStrength = redstone.getAnalogInput("down")
+	signalStrengthCrossing = redstone.getAnalogInput("left")
+	turnRight(1)
+	signalStrength = redstone.getAnalogInput("left")
 	if (signalStrength > signalStrengthCrossing) then
 		-- Correct route
 		for i=1,treeCount do
-			signalStrength = redstone.getAnalogInput("down")
-			if (signalStrength == maxSignalStrength) then
-				return true
-				break
-			end
 			moveForward(1)
+			signalStrength = redstone.getAnalogInput("left")
+			if (signalStrength == maxSignalStrength) then
+				turnLeft(1)
+				return true
+			end
 		end
 		
 	else
@@ -266,7 +271,7 @@ end
 function goToChest()
 	-- First move to correct X, so that turtle doesn't go through the wall
 	moveToX(0)
-	moveTo(0, 0, 0, direction.BACK)
+	moveTo(0, 0, 0, direction.FORWARD)
 end
 
 function getSaplings()
@@ -280,6 +285,7 @@ end
 
 
 print("-- Woodcutter script started --")
+print("-- Start with turtle facing the chest! --")
 
 -- INIT --
 curX = 0
@@ -289,17 +295,27 @@ curDir = direction.FORWARD
 
 while (true) do
 	if (checkFuel()) then
-		if (redstone.getAnalogInput("bottom") > 0) then
+		print(redstone.getAnalogInput("right"))
+		if (redstone.getAnalogInput("right") > 0) then
 			print("A tree has grown!")
 			if (findTree()) then
 				print("Found a tree!")
-				--turnLeft(1)
-				--cutTree()
+				handleTree()
+				-- TODO: collect saplings on way back
+				
+				-- TODO: dump and get materials
+				
 			else
 				print("No tree found")
 			end
 			goToChest()
+		else
+			print("No tree has grown yet")
 		end
+	else
+		print("Not enough fuel!")
 	end
-	sleep(60)
+	sleep(5)
 end
+print("End of program")
+
