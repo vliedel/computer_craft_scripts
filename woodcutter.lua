@@ -147,10 +147,11 @@ function turnRight(num)
 end
 
 function moveUp(blocks)
-	if (blocks < 1) then
-		return
-	end
 	moveToY(curY+blocks)
+end
+
+function moveDown(blocks)
+	moveToY(curY-blocks)
 end
 
 function moveForward(blocks)
