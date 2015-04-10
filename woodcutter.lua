@@ -7,7 +7,8 @@ minFuelAfterRefuel=3200 -- TODO: make percentage? or maybe make a max()-set_valu
 -- Slots
 fuelSlot=1
 saplingSlot=2
-woodSlot=3
+woodSlotBegin=3
+woodSlotEnd=16
 
 -- ID settings
 --fuelID=
@@ -217,7 +218,7 @@ end
 function handleTree()
 	moveUp(1)
 	moveForward(1)
-	turtle.select(woodSlot)
+	turtle.select(woodSlotBegin)
 	moveForward(1) -- will cut
 	
 	-- TODO: use: turtle.compareUp() 	Detects if the block above is the same as the one in the currently selected slot
@@ -278,10 +279,6 @@ function getSaplings()
 
 end
 
-function dumpWood()
-
-end
-
 
 
 print("-- Woodcutter script started --")
@@ -308,7 +305,19 @@ while (true) do
 			else
 				print("No tree found")
 			end
+			
+			-- Go back to start
 			goToChest()
+			
+			-- Dump materials
+			for i=woodSlotBegin, woodSlotEnd do
+				turtle.select(i)
+				turtle.drop()
+			end
+			
+			-- TODO: get materials
+			
+			
 		else
 			print("No tree has grown yet")
 		end
