@@ -242,28 +242,29 @@ function handleTree()
 	moveDown(1)
 end
 
--- Follows the redstone dust (on the sid), finding the place where the signal strength is maxSignalStrength
--- Turn towards the signal
-function findTree()
-	goToChest()
-	moveTo(0, 0, 0, direction.BACK)
-	moveForward(1)
+-- Start at crossing, signal is on the left side of the turtle
+-- Options are: straight or right
+function checkCrossing()
 	signalStrengthCrossing = redstone.getAnalogInput("left")
 	turnRight(1)
 	signalStrength = redstone.getAnalogInput("left")
-	if (signalStrength > signalStrengthCrossing) then
-		-- Correct route
-		for i=1,treeCount do
-			moveForward(1)
-			signalStrength = redstone.getAnalogInput("left")
-			if (signalStrength == maxSignalStrength) then
-				turnLeft(1)
-				return true
-			end
+	if (signalStrength < signalStrengthCrossing) then
+		-- Go straight
+	end
+	-- Go right
+end
+
+-- Follows the redstone dust (on the left side), finding the place where the signal strength is maxSignalStrength
+-- Turn towards the found maxSignalStrength
+function findTree()
+	-- Just to have some maximum, if this function is called half way, it could go through the wall
+	for i=1,treeCount do
+		moveForward(1)
+		signalStrength = redstone.getAnalogInput("left")
+		if (signalStrength == maxSignalStrength) then
+			turnLeft(1)
+			return true
 		end
-		
-	else
-		-- Take the other route
 	end
 	return false
 end
@@ -273,10 +274,6 @@ function goToChest()
 	-- First move to correct X, so that turtle doesn't go through the wall
 	moveToX(0)
 	moveTo(0, 0, 0, direction.FORWARD)
-end
-
-function getSaplings()
-
 end
 
 
@@ -291,19 +288,40 @@ curZ = 0
 curDir = direction.FORWARD
 
 while (true) do
+	-- Just to make sure we're at the start position again
+	goToChest()
 	if (checkFuel()) then
 		print(redstone.getAnalogInput("right"))
 		if (redstone.getAnalogInput("right") > 0) then
 			print("A tree has grown!")
-			if (findTree()) then
+			
+			-- First go to crossing
+			moveTo(0, 0, 0, direction.BACK)
+			moveForward(1)
+			checkCrossing()
+			
+			-- Keep up position of crossing
+			crossingX = curX
+			crossingZ = curZ
+			
+			-- Search for tree in straight line
+			while (findTree()) do
 				print("Found a tree!")
 				handleTree()
-				-- TODO: collect saplings on way back
-				
-				-- TODO: dump and get materials
-				
-			else
-				print("No tree found")
+				turnLeft(1)
+			end
+			
+			-- Collect some saplings on the way back, suckDown each step
+			-- Move 3 further than last found tree, and then back to the crossing
+			turtle.select(saplingSlot)
+			for i=1,3 do
+				turtle.suckDown()
+				moveForward(1)
+			end
+			turnLeft(2)
+			while (curX ~= crossingX and curZ ~= crossingZ) do
+				turtle.suckDown()
+				moveForward(1)
 			end
 			
 			-- Go back to start
