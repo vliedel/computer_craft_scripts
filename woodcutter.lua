@@ -213,6 +213,57 @@ end
 -- Woodcutter specific functions --
 -----------------------------------
 
+
+function moveForwardCollect(startX, startY, startZ, startDir)
+	if (turtle.getItemCount(saplingSlot) < 64) then
+		moveForward(1)
+		turtle.suckDown()
+		return true
+	else
+		moveTo(startX, startY, startZ, (startDir+2)%4)
+		return false
+	end
+end
+
+-- Spirals around starting point, suckDown() each step
+-- Ends at the starting point, facing opposite direction
+function spiralCollect(radius)
+	startX = curX
+	startZ = curZ
+	startDir = curDir
+	
+	-- Collect at center
+	turtle.suckDown()
+	
+	for i=1,radius do
+		-- Move to circle with next radius
+		if not moveForwardCollect(startX, curY, startZ, startDir) then
+			return
+		end
+		turnRight(1)
+		
+		-- Do the upper line
+		for j=1,2*i-1 do
+			if not moveForwardCollect(startX, curY, startZ, startDir) then
+				return
+			end
+		end
+		
+		-- Do the right, bottom and left line
+		for k=1,3 do
+			turnRight(1)
+			for j=1,2*i do
+				if not moveForwardCollect(startX, curY, startZ, startDir) then
+					return
+				end
+			end
+		end
+	end
+	
+	-- Go back to center
+	moveTo(startX, curY, startZ, (startDir+2)%4)
+end
+
 -- Turtle is facing a tree, but with redstone dust in between.
 -- Cut it and replant, move back to where it started, facing away from tree
 function handleTree()
@@ -237,7 +288,9 @@ function handleTree()
 	if (turtle.getItemCount() > 1) then
 		turtle.placeDown()
 	end
-	turnLeft(2)
+	
+	-- Collect saplings: spiral around root
+	spiralCollect(1)
 	moveForward(2)
 	moveDown(1)
 end
@@ -255,18 +308,19 @@ function checkCrossing()
 end
 
 -- Follows the redstone dust (on the left side), finding the place where the signal strength is maxSignalStrength
--- Turn towards the found maxSignalStrength
+-- Turns towards the found maxSignalStrength
+-- Returns false when signal is 0
 function findTree()
-	-- Just to have some maximum, if this function is called half way, it could go through the wall
-	for i=1,treeCount do
+	while (true) do
 		moveForward(1)
 		signalStrength = redstone.getAnalogInput("left")
 		if (signalStrength == maxSignalStrength) then
 			turnLeft(1)
 			return true
+		elseif (signalStrength < 1) then
+			return false
 		end
 	end
-	return false
 end
 
 -- Makes the turtle go to the chest, where it can get fuel, get saplings and dump wood
@@ -309,19 +363,6 @@ while (true) do
 				print("Found a tree!")
 				handleTree()
 				turnLeft(1)
-			end
-			
-			-- Collect some saplings on the way back, suckDown each step
-			-- Move 3 further than last found tree, and then back to the crossing
-			turtle.select(saplingSlot)
-			for i=1,3 do
-				turtle.suckDown()
-				moveForward(1)
-			end
-			turnLeft(2)
-			while (curX ~= crossingX and curZ ~= crossingZ) do
-				turtle.suckDown()
-				moveForward(1)
 			end
 			
 			-- Go back to start
