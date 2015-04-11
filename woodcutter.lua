@@ -140,7 +140,7 @@ function moveTo(newX, newY, newZ, newDir)
 end
 
 function turnLeft(num)
-	turn((curDir-num)%4)
+	turn((curDir+4-num)%4)
 end
 
 function turnRight(num)
