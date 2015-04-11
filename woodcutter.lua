@@ -1,4 +1,4 @@
-require "math"
+--require "math"
 
 -- Fuel settings
 minFuel=50
