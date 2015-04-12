@@ -136,6 +136,7 @@ function moveTo(newX, newY, newZ, newDir)
 	print("move to: x=", newX, " y=", newY, " z=", newZ, " dir=", newDir)
 	moveToZ(newZ)
 	moveToX(newX)
+	moveToY(newY)
 	turn(newDir)
 end
 
