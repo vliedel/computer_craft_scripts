@@ -296,38 +296,52 @@ function handleTree()
 	moveDown(1)
 end
 
--- Start at crossing, signal is on the left side of the turtle
--- Options are: straight or right
-function checkCrossing()
-	signalStrengthCrossing = redstone.getAnalogInput("left")
-	turnRight(1)
-	signalStrength = redstone.getAnalogInput("left")
-	if (signalStrength < signalStrengthCrossing) then
-		-- Go straight
-	end
-	-- Go right
-end
-
--- Follows the redstone dust (on the left side), finding the place where the signal strength is maxSignalStrength
+-- Follows the redstone dust (on the left or right side), finding the place where the signal strength is maxSignalStrength
 -- Turns towards the found maxSignalStrength
 -- Returns false when signal is 0
 function findTree()
 	while (true) do
-		moveForward(1)
-		signalStrength = redstone.getAnalogInput("left")
-		if (signalStrength == maxSignalStrength) then
-			turnLeft(1)
-			return true
-		elseif (signalStrength < 1) then
-			return false
+		signalLeft = redstone.getAnalogInput("left")
+		signalRight = redstone.getAnalogInput("right")
+		if (signalLeft < 1 and signalRight < 1) then
+			return -1
 		end
+		if (signalLeft == maxSignalStrength) then
+			turnLeft(1)
+			return direction.LEFT
+		end
+		if (signalRight == maxSignalStrength) then
+			turnRight(1)
+			return direction.RIGHT
+		end
+		moveForward(1)
 	end
+end
+
+-- Start at crossing, signal is on the left side of the turtle
+function checkCrossing()
+	signalStrengthCrossing = redstone.getAnalogInput("left")
+	turnRight(1)
+	signalStrength = redstone.getAnalogInput("left")
+	if (signalStrength <= signalStrengthCrossing) then
+		-- Go straight
+		turnLeft(1)
+		moveUp(1)
+		moveForward(8)
+		moveDown(1)
+		turnRight(1)
+		return direction.FORWARD
+	end
+	
+	-- Go right
+	return direction.RIGHT
 end
 
 -- Makes the turtle go to the chest, where it can get fuel, get saplings and dump wood
 function goToChest()
 	-- First move to correct X, so that turtle doesn't go through the wall
 	moveToX(0)
+	moveTo(0, curY, 0, direction.FORWARD)
 	moveTo(0, 0, 0, direction.FORWARD)
 end
 
@@ -353,31 +367,35 @@ while (true) do
 			-- First go to crossing
 			moveTo(0, 0, 0, direction.BACK)
 			moveForward(1)
-			checkCrossing()
-			
-			-- Keep up position of crossing
-			crossingX = curX
-			crossingZ = curZ
+			crossingRes = checkCrossing()
 			
 			-- Search for tree in straight line
-			while (findTree()) do
+			while (true) do
+				res = findTree()
+				if (res < 0) then
+					break
+				end
 				print("Found a tree!")
 				handleTree()
-				turnLeft(1)
+				if (res == direction.LEFT) then
+					turnLeft(1)
+				else
+					turnRight(1)
+				end
 			end
 			
 			-- Go back to start
+			if (crossingRes == direction.FORWARD) then
+				moveUp(1)
+			end
 			goToChest()
 			
 			-- Dump materials
 			for i=woodSlotBegin, woodSlotEnd do
 				turtle.select(i)
 				turtle.drop()
+				-- TODO: check if chest is full
 			end
-			
-			-- TODO: get materials
-			
-			
 		else
 			print("No tree has grown yet")
 		end
