@@ -232,7 +232,12 @@ function spiralCollect(radius)
 	startDir = curDir
 	
 	-- Collect at center
-	turtle.suckDown()
+	if (turtle.getItemCount(saplingSlot) < 64) then
+		turtle.suckDown()
+	else
+		moveTo(startX, curY, startZ, (startDir+2)%4)
+		return
+	end
 	
 	for i=1,radius do
 		-- Move to circle with next radius
