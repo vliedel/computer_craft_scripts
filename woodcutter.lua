@@ -1,5 +1,3 @@
---require "math"
-
 -- Fuel settings
 minFuel=50
 minFuelAfterRefuel=3200 -- TODO: make percentage? or maybe make a max()-set_value
@@ -360,7 +358,6 @@ while (true) do
 	-- Just to make sure we're at the start position again
 	goToChest()
 	if (checkFuel()) then
-		print(redstone.getAnalogInput("right"))
 		if (redstone.getAnalogInput("right") > 0) then
 			print("A tree has grown!")
 			
@@ -394,7 +391,6 @@ while (true) do
 			for i=woodSlotBegin, woodSlotEnd do
 				turtle.select(i)
 				turtle.drop()
-				-- TODO: check if chest is full
 			end
 		else
 			print("No tree has grown yet")
@@ -402,7 +398,7 @@ while (true) do
 	else
 		print("Not enough fuel!")
 	end
-	sleep(5)
+	sleep(60)
 end
 print("End of program")
 
