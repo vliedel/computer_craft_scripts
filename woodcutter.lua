@@ -15,6 +15,7 @@ woodSlotEnd=16
 
 -- Redstone signal settings
 maxSignalStrength=15
+chestFullSignal=8
 
 -- Woodcutter settings
 treeCount=4
@@ -397,6 +398,12 @@ while (true) do
 				turtle.select(i)
 				turtle.drop()
 			end
+			
+			if (redstone.getAnalogInput("bottom") >= chestFullSignal) then
+				print("Output chest is too full!")
+				break
+			end
+			
 		else
 			print("No tree has grown yet")
 		end
