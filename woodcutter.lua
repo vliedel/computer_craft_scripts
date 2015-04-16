@@ -19,6 +19,7 @@ chestFullSignal=8
 
 -- Woodcutter settings
 treeCount=4
+maxSaplings=50
 
 -- turtle.dig() Attempts to dig the block in front of the turtle. If successful, suck() is automatically called, placing the item in turtle inventory in the selected slot if possible (block type matches and the slot is not a full stack yet), or in the next available slot.
 -- returns true if block was broken
@@ -215,7 +216,7 @@ end
 
 
 function moveForwardCollect(startX, startY, startZ, startDir)
-	if (turtle.getItemCount(saplingSlot) < 64) then
+	if (turtle.getItemCount(saplingSlot) < maxSaplings) then
 		moveForward(1)
 		turtle.suckDown()
 		return true
@@ -231,9 +232,10 @@ function spiralCollect(radius)
 	startX = curX
 	startZ = curZ
 	startDir = curDir
+	turtle.select(saplingSlot)
 	
 	-- Collect at center
-	if (turtle.getItemCount(saplingSlot) < 64) then
+	if (turtle.getItemCount(saplingSlot) < maxSaplings) then
 		turtle.suckDown()
 	else
 		moveTo(startX, curY, startZ, (startDir+2)%4)
