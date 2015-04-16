@@ -329,19 +329,17 @@ end
 -- Start at crossing, signal is on the left side of the turtle
 function checkCrossing()
 	signalStrengthCrossing = redstone.getAnalogInput("left")
-	turnRight(1)
-	signalStrength = redstone.getAnalogInput("left")
+	signalStrength = redstone.getAnalogInput("front")
 	if (signalStrength <= signalStrengthCrossing) then
 		-- Go straight
-		turnLeft(1)
 		moveUp(1)
 		moveForward(8)
 		moveDown(1)
 		turnRight(1)
 		return direction.FORWARD
 	end
-	
 	-- Go right
+	turnRight(1)
 	return direction.RIGHT
 end
 
