@@ -189,7 +189,7 @@ end
 
 function checkFuel()
 --	while (turtle.getFuelLevel() < minFuel) do
-	turtle.select(fuelSlot) 
+	turtle.select(fuelSlot)
 	while (turtle.getFuelLevel() < minFuelAfterRefuel) do
 		-- Always leave 1 fuel item in the slot
 		if (turtle.getItemCount(fuelSlot) < 2) then
@@ -205,7 +205,9 @@ function checkFuel()
 end
 
 function getFuel()
-
+	goToFuelChest()
+	turtle.select(fuelSlot)
+	turtle.suck(64-turtle.getItemCount(fuelSlot))
 end
 
 
@@ -343,14 +345,19 @@ function checkCrossing()
 	return direction.RIGHT
 end
 
--- Makes the turtle go to the chest, where it can get fuel, get saplings and dump wood
-function goToChest()
+-- Makes the turtle go to the chest, where it can dump wood
+function goToOuputChest()
 	-- First move to correct X, so that turtle doesn't go through the wall
 	moveToX(0)
 	moveTo(0, curY, 0, direction.FORWARD)
 	moveTo(0, 0, 0, direction.FORWARD)
 end
 
+function goToFuelChest()
+	moveToX(0)
+	moveTo(0, curY, 0, direction.RIGHT)
+	moveTo(0, 1, 0, direction.RIGHT)
+end
 
 
 print("-- Woodcutter script started --")
@@ -363,8 +370,11 @@ curZ = 0
 curDir = direction.FORWARD
 
 while (true) do
-	-- Just to make sure we're at the start position again
-	goToChest()
+	if (not checkFuel()) then
+		getFuel()
+	end
+	-- Make sure we're at the start position again
+	goToOuputChest()
 	if (checkFuel()) then
 		if (redstone.getAnalogInput("right") > 0) then
 			print("A tree has grown!")
@@ -393,7 +403,7 @@ while (true) do
 			if (crossingRes == direction.FORWARD) then
 				moveUp(1)
 			end
-			goToChest()
+			goToOuputChest()
 			
 			-- Dump materials
 			for i=woodSlotBegin, woodSlotEnd do
